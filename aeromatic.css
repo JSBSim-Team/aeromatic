@@ -1,0 +1,29 @@
+body {
+    background-color: white;
+    font-size: 11pt;
+}
+
+section {
+    margin: 0 20%;
+    padding: 20px;
+    border: 1px solid black;
+}
+
+h2 {
+    color: red;
+    font-weight: normal;
+}
+
+h3 {
+    margin: 0;
+    font-size: inherit;
+}
+
+div {
+    border-bottom: 1px solid grey;
+    padding: 1em 0;
+}
+
+label {
+    font-weight: bold;
+}
