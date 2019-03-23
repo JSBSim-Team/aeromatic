@@ -1,5 +1,9 @@
+version = 0.97;
+
 $(document).ready(
     function() {
+        $('#header p').text('Version '+version);
+
         $('input#engine_generate').click(function() {
             var name = $('#ac_enginename').val();
             var type = $('input[name=ac_enginetype]:checked').val();
@@ -16,8 +20,10 @@ $(document).ready(
             if (units == 3)
                 power *= 0.2248;
 
+            var comments = '<--\n  File:     '+name+'.xml\n  Author:   Aero-Matic v '+version+'\n\n  Inputs\n    name:           '+name+'\n    type:           ';
 
             if (type == 0) {
+                comments += 'piston'
                 var engine = $('<piston_engine/>');
                 var minmp = $('<minmp>');
                 minmp.attr('unit', 'INHG');
@@ -34,11 +40,39 @@ $(document).ready(
             engine.attr('name', name);
 
             var XML = $('<XMLDocument/>');
+            comments +='\n    power:          '+power;
+            switch(units) {
+                case 0:
+                case 2:
+                    comments += 'hp';
+                    break;
+                case 1:
+                case 3:
+                    comments += 'lb';
+                    break;
+            }
+
+            comments += '\n    augmented?      ';
+
+            if (augmented)
+                comments += 'yes';
+            else
+                comments += 'no';
+
+                comments += '\n    injected?       ';
+
+                if (injected)
+                    comments += 'yes';
+                else
+                    comments += 'no';
+    
+            XML.append(comments+'\n-->\n')
             XML.append(engine);
 
             console.log("Engine name: "+name+"\nEngine type: "+type+"\nEngine power: "+power+"\nEngine units: "+units+"\nAugmented: "+augmented+"\nInjected: "+injected);
             console.log(XML.html());
             
+            // Trigger the engine XML file download
             var blob = new Blob(['<?xml version=\"1.0\"?>\n', XML.html()], {type: 'text/xml'});
             var url = URL.createObjectURL(blob);
             var link = $('#download-link');
