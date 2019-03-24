@@ -16,6 +16,81 @@ If you model a multi-engined airplane you must make the above change for each en
 
 **NOTE!!** Be aware that some browsers can be configured to add HTML tags and make other changes to files without telling you. This will prevent Aero-Matic from working! Also, some browsers will *reload* the current page when displaying the document source. This may result in a bad document. Also, watch out for browsers that are set to fetch *cached* pages rather than new ones.
 
+## What Aeromatic does
+### Engine Configuration
+Engine.php creates a configuration file for the JSBSim engine modules according to the following table:
+
+Engine Type | JSBSim Module 
+-|-
+Piston | FGPiston
+Turbine | FGTurbine
+TurboProp | FGTurbine
+Rocket | FGRocket
+
+The user inputs are first converted to English units. The header is then printed, and user inputs are echoed as comments. Now `engine2.php` prints data specific to the engine type. The only calculation done for the piston engine is displacement, which is based on an assumed 0.625 hp per cubic inch. All other piston engine values are "typical".
+
+The turbine engine is modeled with an assumed bypass ratio of 1.0 and a TSFC of 0.8. Other data needed by the module are filled with "typical" values. Afterburning and water injection are enabled if so selected.
+
+The turboprop engine is modeled as a turbine with a bypass ratio of 0 and a TSFC of 0.55. The maximum power value is converted to a maximum thrust value using the rough approximation that 1 hp equals 2.24 pounds of thrust. Thrust is then set to decrease at high speeds, thus simulating a propeller.
+
+The rocket engine is Jon Berndt's X-15 engine.
+
+### Propeller Configuration
+`Prop.php` first converts user input to English units, then echoes the input as comments. The propeller is modeled by first estimating the total "linear blade inches", i.e. sum of all blade lengths, needed to absorb the engine's power. I use 5.3 times the square root of the horsepower, a formula based only on curve-fitting a sample of engine/prop combinations. No science here. The number of blades is estimated using the following chart:
+
+Engine Horsepower | No. of blades
+-|-
+< 400 | 2
+400 < - < 1400 | 3
+1400+ | 4
+
+The mass of each blade is estimated to be 0.9317 slugs per foot. The rest of the values are "typical".
+
+### Aero Configuration
+`Aero.php` first converts user input to English units. The first calculation is to estimate wing loading at maximum weight based on the aircraft type as per this chart:
+
+Aircraft Type | Wing loading (psf)
+-|-
+Glider | 7
+Light Single | 14
+Light Twin | 29
+WWII Fighter, racer, aerobatic | 45
+Single Engine Transonic/Supersonic Fighter | 95
+Two Engine Transonic/Supersonic Fighter | 100
+Two Engine Transonic Transport | 110
+Three Engine Transonic Transport | 110
+Four+ Engine Transonic Transport | 110
+Multi-engine Prop Transport | 57
+
+If the user did not supply a wing area, then the wing loading and maximum weight are used to estimate one. If the user *does* supply a wing area, then the actual wing loading is calculated and is used in lieu of the charted value.
+
+Once wing area has been established, it is divided by wing span to give the mean aerodynamic chord. The areas of the tail surfaces are estimated by multiplying wing area by a factor depending on aircraft type. The moment arms of the tail surfaces are similarly estimated from the aircraft length and type.
+
+The airplane's moments of inertia about three axes are estimated using Roskam's formulae and constants for various airplane types. Presently I'm increasing the moments by 50% to make up for a lack of feel in the control stick.
+
+The aircaft's ZFW, zero-fuel weight, is estimated by multplying the maximum weight by a factor according to aircraft type. This value is named "empty weight" in the JSBSim configuration.
+
+Next the aircraft's center of gravity, CG, location is estimated. The longitudinal (x axis) location was already assumed when the horizontal stablizer moment arm was estimated, so this distance is used to get the longitudinal location of the CG from the nose, in inches. The CG is located on the intersection of the x and y axes, under the assumtion that the aircraft is laterally symetric, so the y location is zero. I've put the vertical (z) location of the CG a bit below centerline. The location of the aerodynamic center is, for simplicity, the same as the CG, except it is a bit above the CG to help with stability.
+
+The location of the pilot's eyepoint is then estimated based on aircraft type.
+
+The landing gear location is based on the CG location. Tricycle main wheels are placed slightly behind the CG, and taildragger main wheels slightly ahead. The lateral spread of the main gear is a function of wing span and airplane type. The z-position of the main gear is based on the airplane's length. This is the distance in inches from the centerline to the bottom of the tire when the gear is extended and hanging freely. Note that the glider presents a problem in that JSBSim presently supports three ground contact points, whereas a glider needs five (main wheel, nose skid, tail wheel, and two wing tip skids). The locations of the nose or tail wheels is estimated from the airplane length and the location of the main gear.
+
+The engines and thrusters are positioned according to the user-selected engine layout, and some assumptions on engine spacing and location. There are N+1 fuel tanks for an N-engined airplane. All fuel tanks are located at the aircraft center of gravity and contain 500 pounds of fuel.
+
+The FCS, flight control system, is the same for every airplane, except for the yaw damper, which is only added if desired by the user.
+
+The lift force is based on a lift-vs-alpha curve made from four points, using the assumed CL_0, CL_alpha and CL_max for the aircraft type. Additional lift due to flaps is estimated based on aircraft type. Some types will have a lift decrement due to speedbrakes (or spoilers). All types have a lift contribution due to elevator deflection, based on aircraft type.
+
+The drag force consists of CD0 (drag at zero-lift), CDi (induced drag), CDmach (drag due to compressibility), CDflap, CDgear, CDsb (speedbrakes), CDbeta (drag due to side slip), and CDde (drag due to elevator deflection).
+
+The only side force used is the force due to yaw angle (sideslip).
+
+Roll moments used are Clbeta (roll due to sideslip), Clp (roll damping), Clr (roll due to yaw rate), Clda (roll due to ailerons), and Cldr (roll due to rudder deflection).
+
+Pitch moments used are Cmalpha (pitch due to angle-of-attack), Cmde (pitch due to elevator deflection), Cmq (pitch due to pitch rate), and Cmadot (pitch due to alpha rate).
+
+Yaw moments are Cnbeta (yaw due to sideslip), Cnr (yaw damping), Cndr (yaw due to rudder deflection), and Cnda (adverse yaw).
 
 ## Credits
 This is based on the original PHP application by David P. Culp and has been ported to HTML/CSS/JavaScript by Bertrand Coconnier.
