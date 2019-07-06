@@ -32,7 +32,7 @@ $(document).ready(
                     engine = MakeTurbine(power, augmented, injected);
                     break;
                 case 2:
-                    engine = $('<turbine_engine/>');
+                    engine = MakeTurboprop(power, units);
                     break;
                 case 3:
                     engine = MakeRocket();
@@ -196,6 +196,47 @@ function MakeTurbine(power, augmented, injected) {
         );
         engine.append(inj);
     }
+
+    return engine;
+}
+
+function MakeTurboprop(power, units) {
+    var engine = $('<turbine_engine/>');
+
+    // estimate thrust if given power
+    if (units == 0 || units == 1)
+        power *= 2.24;
+        
+    add_tag(engine, 'milthrust', power.toFixed(1));
+    add_tag(engine, 'bypassratio', 0.0);
+    add_tag(engine, 'tsfc', 0.55);
+    add_tag(engine, 'bleed', 0.03);
+    add_tag(engine, 'idlen1', 30.0);
+    add_tag(engine, 'idlen2', 60.0);
+    add_tag(engine, 'maxn1', 100.0);
+    add_tag(engine, 'maxn2', 100.0);
+    add_tag(engine, 'augmented', 0);
+    add_tag(engine, 'injected', 0);
+
+    var idlethrust = make_table('IdleThrust',
+    "    -10000       0   10000   20000   30000   40000   50000\n"+
+    "0.0  0.0430  0.0488  0.0528  0.0694  0.0899  0.1183  0.0\n"+
+    "0.2  0.0500  0.0501  0.0335  0.0544  0.0797  0.1049  0.0\n"+
+    "0.4  0.0040  0.0047  0.0020  0.0272  0.0595  0.0891  0.0\n"+
+    "0.6  0.0     0.0     0.0     0.0276  0.0718  0.0430  0.0\n"+
+    "0.8  0.0     0.0     0.0     0.0     0.0174  0.0086  0.0\n"+
+    "1.0  0.0     0.0     0.0     0.0     0.0     0.0     0.0\n");
+    engine.append(idlethrust);
+
+    var milthrust = make_table('MilThrust',
+    "    -10000       0   10000   20000   30000   40000   50000"+
+    "0.0  1.1260  1.0000  0.7400  0.5340  0.3720  0.2410  0.0\n"+
+    "0.2  1.1000  0.9340  0.6970  0.5060  0.3550  0.2310  0.0\n"+
+    "0.4  1.0000  0.6410  0.6120  0.4060  0.3570  0.2330  0.0\n"+
+    "0.6  0.4430  0.3510  0.2710  0.2020  0.1780  0.1020  0.0\n"+
+    "0.8  0.0240  0.0200  0.0160  0.0130  0.0110  0.0100  0.0\n"+
+    "1.0  0.0     0.0     0.0     0.0     0.0     0.0     0.0\n");
+    engine.append(milthrust);
 
     return engine;
 }
