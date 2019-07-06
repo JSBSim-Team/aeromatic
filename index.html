@@ -59,6 +59,40 @@
             <p>You are now ready to have Aeromatic generate your file. Aeromatic will create a file called <i>engine2.php</i>, which is your engine configuration file. You will need to save this file with a filename of the form <i>engine_name.xml</i></p>
             <input type="button" value="Generate" id="engine_generate">
         </div>
+        <div id="prop">
+            <h2>Step 2: The Prop configuration (if applicable)...</h2>
+            <div>
+                <label for="ac_enginepower2">Engine Power</label>(per engine)
+                <input id="ac_enginepower2" value="1000.0" type="number">
+                <input name="ac_engineunits2" type="radio" value="0" id="horsepower" checked>
+                <label for="horsepower">horsepower</label>
+                <input name="ac_engineunits2" type="radio" value="1" id="kW">
+                <label for="kW">kW</label>
+            </div>
+            <div>
+                <label for="ac_maxengrpm">Maximum Engine RPM</label>
+                <input id="ac_maxengrpm" value="2700.0" type="number">
+            </div>
+            <div>
+                <h3>Pitch</h3>
+                <input name="ac_prop_pitch" type="radio" value="0" id="fixed" checked>
+                <label for="fixed">fixed</label>
+                <input name="ac_prop_pitch" type="radio" value="1" id="variable">
+                <label for="variable">variable</label>
+            </div>
+            <div>
+                <label for="ac_diameter">Propeller Diameter</label>
+                <input id="ac_diameter" value="8" type="number">
+                <input name="ac_diaunits" type="radio" value="0" id="feet" checked>
+                <label for="feet">feet</label>
+                <input name="ac_diaunits" type="radio" value="1" id="inches">
+                <label for="inches">inches</label>
+                <input name="ac_diaunits" type="radio" value="2" id="meters">
+                <label for="meters">meters</label>
+            </div>
+            <p>You are now ready to have Aeromatic generate your file. Aeromatic will create a file called <i>prop2.php</i>, which is your propeller configuration file. You will need to save this file with a filename of the form <i>prop_name.xml</i>.</p>
+            <input type="button" value="Generate" id="prop_generate">
+        </div>
         <a href="#" id="download-link"></a>
     </section>
 </html>
