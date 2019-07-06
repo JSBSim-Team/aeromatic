@@ -20,7 +20,7 @@ $(document).ready(
             if (units == 3)
                 power *= 0.2248;
 
-            var comments = '<--\n  File:     '+name+'.xml\n  Author:   Aero-Matic v '+version+'\n\n  Inputs\n    name:           '+name+'\n    type:           ';
+            var comments = '<!--\n  File:     '+name+'.xml\n  Author:   Aero-Matic v '+version+'\n\n  Inputs\n    name:           '+name+'\n    type:           ';
             var engine;
 
             switch(type) {
@@ -35,7 +35,7 @@ $(document).ready(
                     engine = $('<turbine_engine/>');
                     break;
                 case 3:
-                    engine = $('<rocket_engine/>');
+                    engine = MakeRocket();
                     break;
             }
 
@@ -92,7 +92,7 @@ function MakePiston(power) {
     var displ = power * 1.9;
     add_tag(engine, 'displacement', displ.toFixed(2), 'IN3');
     add_tag(engine, 'maxhp', power.toFixed(2));
-     add_tag(engine, 'cycles', 4);
+    add_tag(engine, 'cycles', 4);
     add_tag(engine, 'idlerpm', 700);
     add_tag(engine, 'maxrpm', 2800);
     add_tag(engine, 'sparkfaildrop', 0.1);
@@ -118,6 +118,20 @@ function MakePiston(power) {
     add_tag(engine, 'bore',bore.toFixed(3), 'IN');
     add_tag(engine, 'cylinders', n_cylinders.toFixed(1));
     add_tag(engine, 'compression-ratio', 8.0);
+
+    return engine;
+}
+
+function MakeRocket() {
+    var engine = $('<rocket_engine/>');
+    add_tag(engine, 'shr', 1.23);
+    add_tag(engine, 'max_pc', 86556);
+    add_tag(engine, 'variance', 0.1);
+    add_tag(engine, 'prop_eff', 0.67);
+    add_tag(engine, 'maxthrottle', 1.0);
+    add_tag(engine, 'minthrottle', 0.4);
+    add_tag(engine, 'slfuelflowmax', 91.5);
+    add_tag(engine, 'sloxiflowmax', 105.2);
 
     return engine;
 }
